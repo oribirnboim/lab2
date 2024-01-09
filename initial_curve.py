@@ -44,7 +44,7 @@ def sort_by_x(data_set):
 
 def flip_if_needed(data_set):
     x, y = data_set
-    if np.average(y[:len(y)//2]) > 0:
+    if np.average(y[:len(y)//4]) > 0:
         x = -x
         return (x[::-1], y[::-1])
     return (x, y)
@@ -59,11 +59,13 @@ def fix_data(data):
 
 if __name__ == "__main__":
     directory_name = 'material1-BO1'
-    # directory_name = 'mat2'
+    # directory_name = 'material2-BO2'
+    # directory_name = 'material3-BO3'
     data = get_data(directory_name)[::1]
     data = fix_data(data)
     for i in range(len(data)):
-        data_set = data[i]
-        plt.scatter(*data_set)
+        if i not in [0, 1, 4, 6, 11, 12]:
+            data_set = data[i]
+            plt.scatter(*data_set)
     plt.grid()
     plt.show()
