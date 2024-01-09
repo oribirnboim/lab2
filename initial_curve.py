@@ -3,9 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 def get_data(directory):
     res = []
+    file_names = []  # To store the corresponding file names
     # Specify the directory where your CSV files are located
 
     # Get a list of all CSV files in the directory
@@ -21,7 +21,9 @@ def get_data(directory):
 
         # Plot the data
         res.append((np.array(df.iloc[:, 4]), np.array(df.iloc[:, 10])))
-    return res
+        file_names.append(csv_file)  # Store the file name
+
+    return res, file_names
 
 
 def fix_data_set(data_set):
@@ -44,7 +46,7 @@ def sort_by_x(data_set):
 
 def flip_if_needed(data_set):
     x, y = data_set
-    if np.average(y[:len(y)//2]) > 0:
+    if np.average(y[:len(y)//4]) > 0:
         x = -x
         return (x[::-1], y[::-1])
     return (x, y)
@@ -59,11 +61,43 @@ def fix_data(data):
 
 if __name__ == "__main__":
     directory_name = 'material1-BO1'
-    # directory_name = 'mat2'
-    data = get_data(directory_name)[::1]
+    # directory_name = 'material2-BO2'
+    # directory_name = r'material3-BO3\area'
+    # directory_name = r'material1-BO1\area'
+    data, file_names = get_data(directory_name)[::1]
     data = fix_data(data)
-    for i in range(len(data)):
-        data_set = data[i]
-        plt.scatter(*data_set)
-    plt.grid()
+
+    bad_material_2 = [0, 2, 4, 10]
+    bad_material_1 = [2, 3, 5, 9, 10]
+
+    bad_material = bad_material_1
+
+    # Create a figure with two subplots
+    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+
+    # Plot for indices in good_material
+    for i in bad_material:
+        if 0 <= i < len(data):  # Check if the index is within the valid range
+            data_set = data[i]
+            x, y = data_set
+            axs[0].scatter(x, y)
+
+        print(f"Bad Material File: {file_names[i]}")
+
+
+    axs[0].set_title('bad Material Indices')
+    axs[0].grid()
+
+    # Plot for other indices
+    other_indices = [i for i in range(len(data)) if i not in bad_material]
+    for i in other_indices:
+        if 0 <= i < len(data):  # Check if the index is within the valid range
+            data_set = data[i]
+            x, y = data_set
+            axs[1].scatter(x, y)
+
+    axs[1].set_title('Other Indices')
+    axs[1].grid()
+
     plt.show()
+
