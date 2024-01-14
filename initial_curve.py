@@ -84,46 +84,51 @@ def get_endpoint(data_set, x_width, y_width):
     return (x_res, y_res)
 
 
-
-if __name__ == "__main__":
-    directory_name = 'material1-BO1'
-    # directory_name = 'material2-BO2'
-    # directory_name = r'material3-BO3\area'
-    # directory_name = r'material1-BO1\area'
-    data, file_names = get_data(directory_name)[::1]
+def plot_initial_curves():
+    directory_name = 'mat1'
+    error = (0.05, 0.05)
+    data, names = get_data(directory_name)
     data = fix_data(data)
-
-    bad_material_2 = [0, 2, 4, 10]
-    bad_material_1 = [2, 3, 5, 9, 10]
-
-    bad_material = bad_material_1
-
-    # Create a figure with two subplots
-    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
-
-    # Plot for indices in good_material
-    for i in bad_material:
-        if 0 <= i < len(data):  # Check if the index is within the valid range
-            data_set = data[i]
-            x, y = data_set
-            axs[0].scatter(x, y)
-
-        print(f"Bad Material File: {file_names[i]}")
-
-
-    axs[0].set_title('bad Material Indices')
-    axs[0].grid()
-
-    # Plot for other indices
-    other_indices = [i for i in range(len(data)) if i not in bad_material]
-    for i in other_indices:
-        if 0 <= i < len(data):  # Check if the index is within the valid range
-            data_set = data[i]
-            x, y = data_set
-            axs[1].scatter(x, y)
-
-    axs[1].set_title('Other Indices')
-    axs[1].grid()
-
+    x1, y1, xerr, yerr = [], [], [], []
+    for data_set in data:
+        x, y = data_set
+        point = get_endpoint(data_set, *error)
+        x1.append(point[0])
+        xerr.append(error[0])
+        y1.append(point[1])
+        yerr.append(error[1])
+    plt.errorbar(x=x1, y=y1, xerr=xerr, yerr=yerr, fmt='.')
+    directory_name = 'mat2'
+    data, names = get_data(directory_name)
+    data = fix_data(data)
+    x1, y1, xerr, yerr = [], [], [], []
+    for data_set in data:
+        x, y = data_set
+        point = get_endpoint(data_set, *error)
+        x1.append(point[0])
+        xerr.append(error[0])
+        y1.append(point[1])
+        yerr.append(error[1])
+    plt.errorbar(x=x1, y=y1, xerr=xerr, yerr=yerr, fmt='.')
+    plt.ylim(0, 16)
+    plt.xlim(0, 8)
+    plt.title('initial magnetization curves')
+    plt.legend(['material 1', 'material 2'])
+    plt.xlabel('H[V]')
+    plt.ylabel('B[V]')
+    plt.grid()
     plt.show()
 
+
+def plot_folder(name):
+    data, names = get_data(name)
+    for data_set in data:
+        x, y = data_set
+        plt.scatter(x, y)
+    plt.grid()
+    plt.show()
+
+
+if __name__ == "__main__":
+    # plot_folder('mat2')
+    plot_initial_curves()
