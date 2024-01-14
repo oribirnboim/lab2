@@ -3,9 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 def get_data(directory):
     res = []
+    file_names = []  # To store the corresponding file names
     # Specify the directory where your CSV files are located
 
     # Get a list of all CSV files in the directory
@@ -23,7 +23,9 @@ def get_data(directory):
 
         # Plot the data
         res.append((np.array(df.iloc[:, 4]), np.array(df.iloc[:, 10])))
-    return res
+        file_names.append(csv_file)  # Store the file name
+
+    return res, file_names
 
 
 def fix_data_set(data_set):
@@ -84,30 +86,44 @@ def get_endpoint(data_set, x_width, y_width):
 
 
 if __name__ == "__main__":
-    directory_names = ['material1-BO1', 'material2-BO2', 'material1-BO1/area']
-    labels = ['material 1', 'material 2']
-    data_sets = [[8, 7, 4, 2, 12, 6, 11, 0], [8, 5, 3, 1, 9, 6, 7]]
-    uncertainties = [(0.2, 0.04), (0.2, 0.04), (0.2, 0.04)]
-    for i in [2]:
-        directory_name = directory_names[i]
-        data = get_data(directory_name)
-        # data = [data[i] for i in data_sets[i]]
-        data = fix_data(data)
-        x, y, x_err, y_err = initial_curve(data, *uncertainties[i])
-        # plt.errorbar(x=x, y=y, xerr=x_err, yerr=y_err, fmt='o')
-        for j in range(len(data)):
-            # if j in data_sets[i]:
-            data_set = data[j]
-            plt.scatter(*data_set)
-        plt.plot
-    plt.title("initial curves")
-    plt.title("hysteresis loops at different amplitudes")
-    plt.title("subset that matches expectations")
-    plt.title('varying number of plates')
-    # plt.legend(labels)
-    # plt.ylim(0, 0.9)
-    # plt.xlim(0, 9)
-    plt.xlabel("B[V]")
-    plt.ylabel("H[V]")
-    plt.grid()
+    directory_name = 'material1-BO1'
+    # directory_name = 'material2-BO2'
+    # directory_name = r'material3-BO3\area'
+    # directory_name = r'material1-BO1\area'
+    data, file_names = get_data(directory_name)[::1]
+    data = fix_data(data)
+
+    bad_material_2 = [0, 2, 4, 10]
+    bad_material_1 = [2, 3, 5, 9, 10]
+
+    bad_material = bad_material_1
+
+    # Create a figure with two subplots
+    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+
+    # Plot for indices in good_material
+    for i in bad_material:
+        if 0 <= i < len(data):  # Check if the index is within the valid range
+            data_set = data[i]
+            x, y = data_set
+            axs[0].scatter(x, y)
+
+        print(f"Bad Material File: {file_names[i]}")
+
+
+    axs[0].set_title('bad Material Indices')
+    axs[0].grid()
+
+    # Plot for other indices
+    other_indices = [i for i in range(len(data)) if i not in bad_material]
+    for i in other_indices:
+        if 0 <= i < len(data):  # Check if the index is within the valid range
+            data_set = data[i]
+            x, y = data_set
+            axs[1].scatter(x, y)
+
+    axs[1].set_title('Other Indices')
+    axs[1].grid()
+
     plt.show()
+
