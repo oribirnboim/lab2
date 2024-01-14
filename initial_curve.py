@@ -10,9 +10,11 @@ def get_data(directory):
 
     # Get a list of all CSV files in the directory
     csv_files = [file for file in os.listdir(directory) if file.endswith('.csv')]
-
+    i = 0
     # Loop through each CSV file and plot the data
     for csv_file in csv_files:
+        print(str(i) + ': ' + csv_file)
+        i += 1
         # Construct the full file path
         file_path = os.path.join(directory, csv_file)
 
@@ -57,15 +59,55 @@ def fix_data(data):
     return res
 
 
+def initial_curve(data, x_width, y_width):
+    x = []
+    x_err = []
+    y = []
+    y_err = []
+    for data_set in data:
+        x1, y1 = get_endpoint(data_set, x_width, y_width)
+        x.append(x1)
+        y.append(y1)
+        x_err.append(x_width)
+        y_err.append(y_width)
+    return x, y, x_err, y_err
+
+
+
+
+def get_endpoint(data_set, x_width, y_width):
+    x, y = data_set
+    x_res = x[len(x)-1] - x_width
+    y_res = np.max(y) - y_width
+    return (x_res, y_res)
+
+
+
 if __name__ == "__main__":
-    directory_name = 'material1-BO1'
-    # directory_name = 'material2-BO2'
-    # directory_name = 'material3-BO3'
-    data = get_data(directory_name)[::1]
-    data = fix_data(data)
-    for i in range(len(data)):
-        if i not in [0, 1, 4, 6, 11, 12]:
-            data_set = data[i]
+    directory_names = ['material1-BO1', 'material2-BO2', 'material1-BO1/area']
+    labels = ['material 1', 'material 2']
+    data_sets = [[8, 7, 4, 2, 12, 6, 11, 0], [8, 5, 3, 1, 9, 6, 7]]
+    uncertainties = [(0.2, 0.04), (0.2, 0.04), (0.2, 0.04)]
+    for i in [2]:
+        directory_name = directory_names[i]
+        data = get_data(directory_name)
+        # data = [data[i] for i in data_sets[i]]
+        data = fix_data(data)
+        x, y, x_err, y_err = initial_curve(data, *uncertainties[i])
+        # plt.errorbar(x=x, y=y, xerr=x_err, yerr=y_err, fmt='o')
+        for j in range(len(data)):
+            # if j in data_sets[i]:
+            data_set = data[j]
             plt.scatter(*data_set)
+        plt.plot
+    plt.title("initial curves")
+    plt.title("hysteresis loops at different amplitudes")
+    plt.title("subset that matches expectations")
+    plt.title('varying number of plates')
+    # plt.legend(labels)
+    # plt.ylim(0, 0.9)
+    # plt.xlim(0, 9)
+    plt.xlabel("B[V]")
+    plt.ylabel("H[V]")
     plt.grid()
     plt.show()
