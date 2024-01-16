@@ -75,8 +75,6 @@ def initial_curve(data, x_width, y_width):
     return x, y, x_err, y_err
 
 
-
-
 def get_endpoint(data_set, x_width, y_width):
     x, y = data_set
     x_res = x[len(x)-1] - x_width
@@ -86,7 +84,7 @@ def get_endpoint(data_set, x_width, y_width):
 
 def plot_initial_curves():
     directory_name = 'mat1'
-    error = (0.05, 0.05)
+    error = (0.1, 0.1)
     data, names = get_data(directory_name)
     data = fix_data(data)
     x1, y1, xerr, yerr = [], [], [], []
@@ -112,7 +110,7 @@ def plot_initial_curves():
     plt.errorbar(x=x1, y=y1, xerr=xerr, yerr=yerr, fmt='.')
     plt.ylim(0, 16)
     plt.xlim(0, 8)
-    plt.title('initial magnetization curves')
+    plt.title('Initial Magnetization Curves')
     plt.legend(['material 1', 'material 2'])
     plt.xlabel('H[V]')
     plt.ylabel('B[V]')
@@ -129,6 +127,96 @@ def plot_folder(name):
     plt.show()
 
 
+def plot_full_loops():
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    data, names = get_data('mat1')
+    data = fix_data(data)
+    for data_set in data:
+        x, y = data_set
+        ax1.scatter(x, y, s=1)
+    ax1.grid()
+    ax1.set_title('material 1')
+    ax1.set_xlabel('H[V]')
+    ax1.set_ylabel('B[V]')
+    ax1.set_xlim(-7.5, 7.5)
+    ax1.set_ylim(-15, 15)
+    data, names = get_data('mat2')
+    data = fix_data(data)
+    for data_set in data:
+        x, y = data_set
+        ax2.scatter(x, y, s=1)
+    ax2.grid()
+    ax2.set_title('material 2')
+    ax2.set_xlabel('H[V]')
+    ax2.set_ylabel('B[V]')
+    ax2.set_xlim(-7.5, 7.5)
+    ax2.set_ylim(-15, 15)
+    fig.suptitle('B over H curves')
+    plt.show()
+
+
+def clean_file_names(names):
+    return [int(name.split('.')[0]) for name in names]
+
+
+def sample_multiple_slabs(data, field):
+    y1, y_err= [], []
+    yerr = 0.1
+    for data_set in data:
+        x, y = data_set
+        index = np.searchsorted(x, field)
+        y1.append(abs(y[index]))
+        y_err.append(yerr)
+    return y1, y_err
+
+
+
+def plot_multiple_slabs():
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    xlim = (-6, 6)
+    ylim = (-25, 25)
+    data, names = get_data('mat1/area_again')
+    data = fix_data(data)
+    for data_set in data:
+        x, y = data_set
+        ax1.scatter(x, y, s=1)
+    ax1.grid()
+    ax1.set_title('material 1')
+    ax1.set_xlabel('H[V]')
+    ax1.set_ylabel('B[V]')
+    ax1.legend(clean_file_names(names))
+    ax1.set_xlim(*xlim)
+    ax1.set_ylim(*ylim)
+    data, names = get_data('mat2/area')
+    data = fix_data(data)
+    for data_set in data:
+        x, y = data_set
+        ax2.scatter(x, y, s=1)
+    ax2.grid()
+    ax2.set_title('material 2')
+    ax2.set_xlabel('H[V]')
+    ax2.set_ylabel('B[V]')
+    ax2.legend(clean_file_names(names))
+    ax2.set_xlim(*xlim)
+    ax2.set_ylim(*ylim)
+    fig.suptitle('B Over H Curves for a Varying Amount of Slabs')
+    plt.show()
+
+
+def plot_flux_over_area():
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    data, names = get_data('mat1/area_again')
+    data = fix_data(data)
+    num_slabs = np.array(clean_file_names(names))
+    flux, flux_err = sample_multiple_slabs(data, 0)
+    print(num_slabs, len(flux))
+    ax1.errorbar(x=num_slabs, y=flux, yerr=flux_err, fmt='.')
+    plt.show()
+
+
 if __name__ == "__main__":
-    # plot_folder('mat2')
-    plot_initial_curves()
+    # plot_initial_curves()
+    # plot_full_loops()
+    # plot_multiple_slabs()
+    # plot_flux_over_area()
+    pass
