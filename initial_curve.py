@@ -161,7 +161,7 @@ def clean_file_names(names):
 
 def sample_multiple_slabs(data, field):
     y1, y_err= [], []
-    yerr = 0.1
+    yerr = 0.2
     for data_set in data:
         x, y = data_set
         index = np.searchsorted(x, field)
@@ -184,7 +184,9 @@ def plot_multiple_slabs():
     ax1.set_title('material 1')
     ax1.set_xlabel('H[V]')
     ax1.set_ylabel('B[V]')
-    ax1.legend(clean_file_names(names))
+    lgnd = ax1.legend(clean_file_names(names))
+    for dot in lgnd.legendHandles:
+        dot._sizes = [10]
     ax1.set_xlim(*xlim)
     ax1.set_ylim(*ylim)
     data, names = get_data('mat2/area')
@@ -196,7 +198,9 @@ def plot_multiple_slabs():
     ax2.set_title('material 2')
     ax2.set_xlabel('H[V]')
     ax2.set_ylabel('B[V]')
-    ax2.legend(clean_file_names(names))
+    lgnd = ax2.legend(clean_file_names(names))
+    for dot in lgnd.legendHandles:
+        dot._sizes = [10]
     ax2.set_xlim(*xlim)
     ax2.set_ylim(*ylim)
     fig.suptitle('B Over H Curves for a Varying Amount of Slabs')
@@ -209,14 +213,73 @@ def plot_flux_over_area():
     data = fix_data(data)
     num_slabs = np.array(clean_file_names(names))
     flux, flux_err = sample_multiple_slabs(data, 0)
-    print(num_slabs, len(flux))
     ax1.errorbar(x=num_slabs, y=flux, yerr=flux_err, fmt='.')
+    ax1.set_xlim(0, 6)
+    ax1.set_ylim(0, 20)
+    ax1.set_xlabel('number of slabs')
+    ax1.set_ylabel('Retentivity [V]')
+    ax1.set_title('material 1')
+    ax1.grid()
+    data, names = get_data('mat2/area')
+    data = fix_data(data)
+    num_slabs = np.array(clean_file_names(names))
+    flux, flux_err = sample_multiple_slabs(data, 0)
+    ax2.errorbar(x=num_slabs, y=flux, yerr=flux_err, fmt='.')
+    ax2.set_xlim(0, 6)
+    ax2.set_ylim(0, 20)
+    ax2.set_xlabel('number of slabs')
+    ax2.set_ylabel('Retentivity [V]')
+    ax2.set_title('material 2')
+    ax2.grid()
+    plt.suptitle('B(H=0) for a varying number of slabs')
     plt.show()
 
+
+def get_max_h(data):
+    h_err = 0.1
+    max_h, max_h_err = [], []
+    for data_set in data:
+        x, y = data_set
+        biggets_h = np.max(x)
+        max_h.append(biggets_h - h_err)
+        max_h_err.append(h_err)
+    return max_h, max_h_err
+
+
+def plot_max_h():
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    data, names = get_data('mat1/area_again')
+    data = fix_data(data)
+    num_slabs = clean_file_names(names)
+    max_h, max_h_err = get_max_h(data)
+    ax1.errorbar(x=num_slabs, y=max_h, yerr=max_h_err, fmt='.')
+    ax1.set_xlim(0, 6)
+    ax1.set_ylim(0, 6)
+    ax1.set_xlabel('number of slabs')
+    ax1.set_ylabel('max(H) [V]')
+    ax1.set_title('material 1')
+    ax1.grid()
+
+    data, names = get_data('mat1/area')
+    data = fix_data(data)
+    num_slabs = clean_file_names(names)
+    max_h, max_h_err = get_max_h(data)
+    ax2.errorbar(x=num_slabs, y=max_h, yerr=max_h_err, fmt='.')
+    ax2.set_xlim(0, 6)
+    ax2.set_ylim(0, 6)
+    ax2.set_xlabel('number of slabs')
+    ax2.set_ylabel('max(H) [V]')
+    ax2.set_title('material 2')
+    ax2.grid()
+    fig.suptitle('amplitude of H depending on cross section')
+    plt.show()
+
+    
 
 if __name__ == "__main__":
     # plot_initial_curves()
     # plot_full_loops()
     # plot_multiple_slabs()
-    # plot_flux_over_area()
+    plot_flux_over_area()
+    # plot_max_h()
     pass
