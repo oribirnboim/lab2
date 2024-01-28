@@ -277,7 +277,7 @@ def plot_max_h():
     
 
 if __name__ == "__main__":
-    plot_initial_curves()
+    # plot_initial_curves()
     # plot_full_loops()
     # plot_multiple_slabs()
     # plot_flux_over_area()
