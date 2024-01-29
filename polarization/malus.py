@@ -40,10 +40,10 @@ def malus2():
     data = get_data('malus2')
     x, y = process_data(data, 10)
     x_err = [2 for val in x]
-    y_err = [2 for val in y]
+    y_err = [0.05 for val in y]
     plt.errorbar(x, y, xerr=x_err, yerr=y_err, fmt='.', label='data')
     def model(theta, i, d):
-        return i*np.cos(theta*np.pi/180 + d)**2
+        return i*np.cos((theta+d)*np.pi/180)**2
     params, covariance = curve_fit(model, x, y, p0=[175, 0])
     variance = np.diag(covariance)
     print(params)
@@ -61,6 +61,34 @@ def malus2():
     plt.show()
 
 
+def malus3(name, step):
+    data = get_data(name)
+    x, y = process_data(data, step)
+    x_err = [2 for val in x]
+    y_err = [0.05 for val in y]
+    plt.errorbar(x, y, xerr=x_err, yerr=y_err, fmt='.', label='data')
+    def model(theta, i, d, error):
+        angle = (theta+d)*np.pi/180
+        return i*(np.cos(angle)*np.cos(np.pi/2 + error*np.pi/180 - angle))**2
+    params, covariance = curve_fit(model, x, y, p0=[175, 0, 0])
+    variance = np.diag(covariance)
+    print(params)
+    print(variance)
+    r2 = r2_score(y, model(x, *params))
+    print(r2)
+    x_fit = np.linspace(np.min(x), np.max(x), 1000)
+    y_fit = model(x_fit, *params)
+    plt.plot(x_fit, y_fit, label='fit')
+    plt.xlabel('degrees [$^\circ$]')
+    plt.ylabel('laser strength [$\mu$A]')
+    plt.grid()
+    plt.legend()
+    plt.title('malus law for 3 polarisers')
+    plt.show()
+
 
 if __name__ == "__main__":
-    malus2()
+    # malus2()
+    # malus3('malus3_grey_1', 5)
+    # malus3('malus3_grey_2', 10)
+    pass
