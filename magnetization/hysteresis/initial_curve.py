@@ -2,6 +2,8 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.optimize import curve_fit
+from sklearn.metrics import r2_score
 
 def get_data(directory):
     res = []
@@ -112,8 +114,8 @@ def plot_initial_curves():
     plt.xlim(0, 8)
     plt.title('Initial Magnetization Curves')
     plt.legend(['material 1', 'material 2'])
-    plt.xlabel('H[V]')
-    plt.ylabel('B[V]')
+    plt.xlabel('H$[a.u.]$')
+    plt.ylabel('B$[a.u.]$')
     plt.grid()
     plt.show()
 
@@ -136,8 +138,8 @@ def plot_full_loops():
         ax1.scatter(x, y, s=1)
     ax1.grid()
     ax1.set_title('material 1')
-    ax1.set_xlabel('H[V]')
-    ax1.set_ylabel('B[V]')
+    ax1.set_xlabel('H$[a.u.]$')
+    ax1.set_ylabel('B$[a.u.]$')
     ax1.set_xlim(-7.5, 7.5)
     ax1.set_ylim(-15, 15)
     data, names = get_data('mat2')
@@ -147,8 +149,8 @@ def plot_full_loops():
         ax2.scatter(x, y, s=1)
     ax2.grid()
     ax2.set_title('material 2')
-    ax2.set_xlabel('H[V]')
-    ax2.set_ylabel('B[V]')
+    ax2.set_xlabel('H$[a.u.]$')
+    ax2.set_ylabel('B$[a.u.]$')
     ax2.set_xlim(-7.5, 7.5)
     ax2.set_ylim(-15, 15)
     fig.suptitle('B over H curves')
@@ -156,7 +158,7 @@ def plot_full_loops():
 
 
 def clean_file_names(names):
-    return [int(name.split('.')[0]) for name in names]
+    return np.array([int(name.split('.')[0]) for name in names])
 
 
 def sample_multiple_slabs(data, field):
@@ -182,8 +184,8 @@ def plot_multiple_slabs():
         ax1.scatter(x, y, s=1)
     ax1.grid()
     ax1.set_title('material 1')
-    ax1.set_xlabel('H[V]')
-    ax1.set_ylabel('B[V]')
+    ax1.set_xlabel('H$[a.u.]$')
+    ax1.set_ylabel('B$[a.u.]$')
     lgnd = ax1.legend(clean_file_names(names))
     for dot in lgnd.legendHandles:
         dot._sizes = [10]
@@ -196,8 +198,8 @@ def plot_multiple_slabs():
         ax2.scatter(x, y, s=1)
     ax2.grid()
     ax2.set_title('material 2')
-    ax2.set_xlabel('H[V]')
-    ax2.set_ylabel('B[V]')
+    ax2.set_xlabel('$H[a.u.]$')
+    ax2.set_ylabel('B$[a.u.]$')
     lgnd = ax2.legend(clean_file_names(names))
     for dot in lgnd.legendHandles:
         dot._sizes = [10]
@@ -217,7 +219,7 @@ def plot_flux_over_area():
     ax1.set_xlim(0, 6)
     ax1.set_ylim(0, 20)
     ax1.set_xlabel('number of slabs')
-    ax1.set_ylabel('Retentivity [V]')
+    ax1.set_ylabel('Retentivity $[a.u.]$')
     ax1.set_title('material 1')
     ax1.grid()
     data, names = get_data('mat2/area')
@@ -228,7 +230,7 @@ def plot_flux_over_area():
     ax2.set_xlim(0, 6)
     ax2.set_ylim(0, 20)
     ax2.set_xlabel('number of slabs')
-    ax2.set_ylabel('Retentivity [V]')
+    ax2.set_ylabel('Retentivity $[a.u.]$')
     ax2.set_title('material 2')
     ax2.grid()
     plt.suptitle('B(H=0) for a varying number of slabs')
@@ -253,10 +255,21 @@ def plot_max_h():
     num_slabs = clean_file_names(names)
     max_h, max_h_err = get_max_h(data)
     ax1.errorbar(x=num_slabs, y=max_h, yerr=max_h_err, fmt='.')
+    # def model(n, V, w, a):
+    #     return V/np.sqrt(1+(a*n)**2)
+    # params, covariance = curve_fit(model, num_slabs, max_h, p0=[10, 1, 1])
+    # variance = np.diag(covariance)
+    # print(params)
+    # print(variance)
+    # r2 = r2_score(max_h, model(num_slabs, *params))
+    # print(r2)
+    # x_fit = np.linspace(0, 6, 1000)
+    # y_fit = model(x_fit, *params)
+    # plt.plot(x_fit, y_fit, label='fit')
     ax1.set_xlim(0, 6)
     ax1.set_ylim(0, 6)
     ax1.set_xlabel('number of slabs')
-    ax1.set_ylabel('max(H) [V]')
+    ax1.set_ylabel('max(H) $[a.u.]$')
     ax1.set_title('material 1')
     ax1.grid()
 
@@ -268,7 +281,7 @@ def plot_max_h():
     ax2.set_xlim(0, 6)
     ax2.set_ylim(0, 6)
     ax2.set_xlabel('number of slabs')
-    ax2.set_ylabel('max(H) [V]')
+    ax2.set_ylabel('max(H) $[a.u.]$')
     ax2.set_title('material 2')
     ax2.grid()
     fig.suptitle('amplitude of H depending on cross section')
@@ -277,7 +290,7 @@ def plot_max_h():
     
 
 if __name__ == "__main__":
-    # plot_initial_curves()
+    plot_initial_curves()
     # plot_full_loops()
     # plot_multiple_slabs()
     # plot_flux_over_area()
