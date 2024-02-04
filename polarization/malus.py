@@ -2,6 +2,7 @@ from scipy .optimize import curve_fit
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy import sin, cos
 from sklearn.metrics import r2_score
 
 
@@ -89,6 +90,6 @@ def malus3(name, step):
 
 if __name__ == "__main__":
     # malus2()
-    malus3('malus3_grey_1', 5)
-    # malus3('malus3_grey_2', 10)
+    # malus3('malus3_grey_1', 5)
+    malus3('malus3_grey_2', 10)
     pass
