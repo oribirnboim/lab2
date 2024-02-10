@@ -69,20 +69,16 @@ def amp2(state, A, phi, p1, p2):
     return A*(first**2 + second**2)
 
 
-
 def simple_model(theta, alpha, A, p1):
     phi = 90
     theta = theta - p1
     return amp2((alpha, theta), A, phi, 0, p1)
 
 
-def plot_model():
-    x = np.linspace(0, 360, 1000)
-    f = lambda a: simple_model(a, 45, 1, 0)
-    y = np.array([f(a) for a in x])
-    plt.plot(x, y)
-    plt.grid()
-    plt.show()
+def half_model(theta, alpha, A, p1):
+    phi = 180
+    theta = theta - p1
+    return amp2((alpha, theta), A, phi, 0, p1)
 
 
 def fit_single10():
@@ -127,6 +123,31 @@ def plot_alpha():
     plt.show()
 
 
+def fit_half_plate(number):
+    file = 'half_waveplate/plate' + str(number) + '.xlsx'
+    data = get_single(file)
+    x, y = process_data(data, step)
+    x_err = [2 for val in x]
+    y_err = [2 for val in y]
+    plt.errorbar(x, y, xerr=x_err, yerr=y_err, fmt='.', label='data')
+    model = simple_model
+    params, covariance = curve_fit(model, x, y, p0=[-25, 175, 0])
+    variance = np.diag(covariance)
+    print(params)
+    print(variance)
+    r2 = r2_score(y, model(x, *params))
+    print(r2)
+    x_fit = np.linspace(np.min(x), np.max(x), 1000)
+    y_fit = model(x_fit, *params)
+    plt.plot(x_fit, y_fit, label='fit')
+    plt.xlabel('$\\theta$ [$^\circ$]')
+    plt.ylabel('laser strength [$\mu$A]')
+    plt.grid()
+    plt.legend()
+    plt.title('half wave at $\\alpha=$' + str(number) + '$^\circ$')
+    plt.show()
+
+
 if __name__ == "__main__":
     # # plot_folder('quarter_waveplate')
     # # fit_single350()
@@ -136,4 +157,9 @@ if __name__ == "__main__":
     # # fit_single('quarter_waveplate/plate40.xlsx', 40)
     # # fit_single('quarter_waveplate/plate60.xlsx', 60)
     # plot_alpha()
+
+    # fit_half_plate(0)
+    # fit_half_plate(30)
+    # fit_half_plate(60)
+    # fit_half_plate(90)
     pass
