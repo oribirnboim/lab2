@@ -2,6 +2,7 @@ from scipy .optimize import curve_fit
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy import sin, cos
 from sklearn.metrics import r2_score
 
 
@@ -53,11 +54,11 @@ def malus2():
     x_fit = np.linspace(np.min(x), np.max(x), 1000)
     y_fit = model(x_fit, *params)
     plt.plot(x_fit, y_fit, label='fit')
-    plt.xlabel('degrees [$^\circ$]')
-    plt.ylabel('laser strength [$\mu$A]')
+    plt.xlabel('Degrees [$^\circ$]', fontsize=14)
+    plt.ylabel('I [$\mu$A]', fontsize=14)
     plt.grid()
     plt.legend()
-    plt.title('malus law for 2 polarisers')
+    plt.title('Malus law for 2 polarisers', fontsize=18)
     plt.show()
 
 
@@ -79,16 +80,16 @@ def malus3(name, step):
     x_fit = np.linspace(np.min(x), np.max(x), 1000)
     y_fit = model(x_fit, *params)
     plt.plot(x_fit, y_fit, label='fit')
-    plt.xlabel('degrees [$^\circ$]')
-    plt.ylabel('laser strength [$\mu$A]')
+    plt.xlabel('Degrees [$^\circ$]', fontsize=14)
+    plt.ylabel('I [$\mu$A]', fontsize=14)
     plt.grid()
     plt.legend()
-    plt.title('malus law for 3 polarisers')
+    plt.title('Malus law for 3 polarisers', fontsize=18)
     plt.show()
 
 
 if __name__ == "__main__":
     # malus2()
-    malus3('malus3_grey_1', 5)
-    # malus3('malus3_grey_2', 10)
+    # malus3('malus3_grey_1', 5)
+    malus3('malus3_grey_2', 10)
     pass
