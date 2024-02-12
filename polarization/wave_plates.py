@@ -6,6 +6,7 @@ import pandas as pd
 from numpy import sin, cos
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
+import re
 
 
 step = 10
@@ -13,34 +14,24 @@ step = 10
 
 def get_data(directory_path):
     data_list = []
-
-    # Loop through all files in the directory
+    alpha = []
     for filename in os.listdir(directory_path):
         if filename.endswith(".xlsx") or filename.endswith(".xls"):
             file_path = os.path.join(directory_path, filename)
-
-            # Read Excel file skipping the first 6 rows
-            df = pd.read_excel(file_path, skiprows=6)
-
-            # Extract the first two columns as numpy arrays
-            column1 = np.array(df.iloc[:, 0])
-            column2 = np.array(df.iloc[:, 1])
-
-            # Append the data as a tuple to the list
-            data_list.append((column1, column2))
-
-    return data_list
+            c1, c2, a = get_single(file_path)
+            data_list.append((c1, c2))
+            alpha.append(a)
+    return data_list, alpha
 
 
 def get_single(file_path):
-    # Read the Excel file into a DataFrame, skipping the first 6 rows
     df = pd.read_excel(file_path, skiprows=6)
-
-    # Extract the first two columns as numpy arrays
+    alpha = int(re.search(r'\d+', file_path).group())
     first_column_array = df.iloc[:, 0].to_numpy()
     second_column_array = df.iloc[:, 1].to_numpy()
-
-    return first_column_array, second_column_array
+    c1, power = process_data((first_column_array, second_column_array), step)
+    theta = (c1 - alpha)%180
+    return theta, power, alpha
 
 
 def fix_data(data):
@@ -123,43 +114,41 @@ def plot_alpha():
     plt.show()
 
 
-def fit_half_plate(number):
-    file = 'half_waveplate/plate' + str(number) + '.xlsx'
-    data = get_single(file)
-    x, y = process_data(data, step)
-    x_err = [2 for val in x]
-    y_err = [2 for val in y]
-    plt.errorbar(x, y, xerr=x_err, yerr=y_err, fmt='.', label='data')
-    model = simple_model
-    params, covariance = curve_fit(model, x, y, p0=[-25, 175, 0])
-    variance = np.diag(covariance)
-    print(params)
-    print(variance)
-    r2 = r2_score(y, model(x, *params))
-    print(r2)
-    x_fit = np.linspace(np.min(x), np.max(x), 1000)
-    y_fit = model(x_fit, *params)
-    plt.plot(x_fit, y_fit, label='fit')
-    plt.xlabel('$\\theta$ [$^\circ$]')
-    plt.ylabel('laser strength [$\mu$A]')
-    plt.grid()
+def plot_halfwave():
+    data, alpha = get_data('half_waveplate')
+    for i in range(len(data)):
+        data_set = data[i]
+        x, y = data_set
+        x_err = [2 for val in x]
+        y_err = [4 for val in y]
+        label = '$\\alpha=$' + str(alpha[i]) + '$^\circ$'
+        params, variance, r2 = fit_half_plate(data_set)
+        print(params)
+        print(variance)
+        print(r2)
+        x_fit = np.linspace(np.min(x), np.max(x), 1000)
+        y_fit = half_model(x_fit, *params)
+        print(x_fit[np.argmin(y_fit)])
+        color = plt.cm.viridis(i / 5.0)
+        plt.errorbar(x, y, xerr=x_err, yerr=y_err, fmt='.', color=color)
+        plt.plot(x_fit, y_fit, label=label, color=color)
+
+    plt.xlabel('$\\theta [^\circ]$')
+    plt.ylabel('A $[\mu A]$')
     plt.legend()
-    plt.title('half wave at $\\alpha=$' + str(number) + '$^\circ$')
+    plt.grid()
     plt.show()
 
 
-if __name__ == "__main__":
-    # # plot_folder('quarter_waveplate')
-    # # fit_single350()
-    # # fit_single10()
-    # # fit_single('quarter_waveplate/plate30.xlsx', 30)
-    # # fit_single('quarter_waveplate/plate35.xlsx', 35)
-    # # fit_single('quarter_waveplate/plate40.xlsx', 40)
-    # # fit_single('quarter_waveplate/plate60.xlsx', 60)
-    # plot_alpha()
+def fit_half_plate(data_set):
+    x, y = data_set
+    model = half_model
+    lower, upper = [0, 0, 0], [360, 200, 180]
+    params, covariance = curve_fit(model, x, y, p0=[25, 175, 0], bounds=(lower, upper))
+    variance = np.diag(covariance)
+    r2 = r2_score(y, model(x, *params))
+    return params, variance, r2
 
-    # fit_half_plate(0)
-    # fit_half_plate(30)
-    # fit_half_plate(60)
-    # fit_half_plate(90)
-    pass
+
+if __name__ == "__main__":
+    plot_halfwave()
