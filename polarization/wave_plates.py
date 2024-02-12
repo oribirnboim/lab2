@@ -30,7 +30,7 @@ def get_single(file_path):
     first_column_array = df.iloc[:, 0].to_numpy()
     second_column_array = df.iloc[:, 1].to_numpy()
     c1, power = process_data((first_column_array, second_column_array), step)
-    theta = (c1 - alpha)%180
+    theta = (c1 - alpha)
     return theta, power, alpha
 
 
@@ -43,12 +43,40 @@ def fix_data(data):
 
 def plot_folder(folder_name):
     data = get_data(folder_name)
-    data = fix_data(data)
     for data_set in data:
         x, y = data_set
         plt.plot(x, y)
     plt.grid()
     plt.show()
+
+
+def quarter_polar():
+    ax = plt.subplot(111, projection='polar')
+
+    for file in ['quarter_waveplate/plate35.xlsx', 'quarter_waveplate/plate350.xlsx', 'quarter_waveplate/plate80.xlsx']:
+        theta, power, alpha = get_single(file)
+        theta = theta*np.pi/180
+        theta_err, power_err = [0.03 for v in theta], [2 for v in power]
+        ax.errorbar(x=theta, y=power, xerr=theta_err, yerr=power_err, fmt='', linestyle='', label=f'$\\alpha={alpha}^\circ$')
+    
+    ax.legend()
+    ax.grid(True)
+    ax.set_rmax(180)
+    plt.show()
+
+
+def polar_plot_folder(folder_name):
+    data, alphas = get_data(folder_name)
+    for i in range(len(data)):
+        data_set = data[i]
+        alpha = alphas[i]
+        x, y = data_set
+        plt.polar(x*np.pi/180, y)
+        plt.title(alpha)
+        plt.grid()
+        plt.grid()
+        plt.show()
+
 
 
 def amp2(state, A, phi, p1, p2):
@@ -151,4 +179,4 @@ def fit_half_plate(data_set):
 
 
 if __name__ == "__main__":
-    plot_halfwave()
+    quarter_polar()
