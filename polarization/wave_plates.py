@@ -147,6 +147,7 @@ def plot_halfwave():
     for i in range(len(data)):
         data_set = data[i]
         x, y = data_set
+        x = x%180
         x_err = [2 for val in x]
         y_err = [4 for val in y]
         label = '$\\alpha=$' + str(alpha[i]) + '$^\circ$'
@@ -162,7 +163,7 @@ def plot_halfwave():
         plt.plot(x_fit, y_fit, label=label, color=color)
 
     plt.xlabel('$\\theta [^\circ]$')
-    plt.ylabel('A $[\mu A]$')
+    plt.ylabel('I $[\mu A]$')
     plt.legend()
     plt.grid()
     plt.show()
@@ -179,4 +180,5 @@ def fit_half_plate(data_set):
 
 
 if __name__ == "__main__":
-    quarter_polar()
+    # quarter_polar()
+    plot_halfwave()
