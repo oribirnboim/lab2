@@ -114,7 +114,7 @@ def d3_fit_quarter():
 
     ax.set_xlabel('$\\alpha$ [$^\circ$]')
     ax.set_ylabel('$\\theta$ [$^\circ$]')
-    ax.set_zlabel('A [$\mu$A]')
+    ax.set_zlabel('I [$\mu$A]')
     ax.legend()
     plt.show()
 
@@ -166,7 +166,7 @@ def separate_fit_quarter():
                 ax.plot(fit_x_alpha, fit_y_alpha, color=color, linestyle='--')
 
         ax.set_xlabel('$\\theta$ [$^\circ$]')
-        ax.set_ylabel('A [$\mu$A]')
+        ax.set_ylabel('I [$\mu$A]')
         ax.grid()
         ax.set_ylim([0, 180])
         ax.legend()
@@ -215,7 +215,7 @@ def fit_half():
 
 if __name__ == "__main__":
     # d3_fit_quarter()
-    separate_fit_quarter()
+    # separate_fit_quarter()
     # fit_quarter()
     # fit_half()
     # plot_folder('quarter_waveplate')
