@@ -37,8 +37,8 @@ def process_data(data, step):
 
 
 
-def malus2():
-    data = get_data('malus2')
+def malus2(file_name):
+    data = get_data(file_name)
     x, y = process_data(data, 10)
     x_err = [2 for val in x]
     y_err = [0.05 for val in y]
@@ -54,12 +54,13 @@ def malus2():
     x_fit = np.linspace(np.min(x), np.max(x), 1000)
     y_fit = model(x_fit, *params)
     plt.plot(x_fit, y_fit, label='fit')
-    plt.xlabel('degrees [$^\circ$]')
-    plt.ylabel('laser strength [$\mu$A]')
+    plt.xlabel('Degrees [$^\circ$]', fontsize=14)
+    plt.ylabel('I [$\mu$A]', fontsize=14)
     plt.grid()
     plt.legend()
-    plt.title('malus law for 2 polarisers')
+    # plt.title('Malus law for 2 polarisers', fontsize=18)
     plt.show()
+    return params, variance
 
 
 def malus3(name, step):
@@ -80,16 +81,16 @@ def malus3(name, step):
     x_fit = np.linspace(np.min(x), np.max(x), 1000)
     y_fit = model(x_fit, *params)
     plt.plot(x_fit, y_fit, label='fit')
-    plt.xlabel('degrees [$^\circ$]')
-    plt.ylabel('laser strength [$\mu$A]')
+    plt.xlabel('Degrees [$^\circ$]', fontsize=14)
+    plt.ylabel('I [$\mu$A]', fontsize=14)
     plt.grid()
     plt.legend()
-    plt.title('malus law for 3 polarisers')
+    plt.title('Malus law for 3 polarisers', fontsize=18)
     plt.show()
 
 
 if __name__ == "__main__":
-    # malus2()
+    malus2("malus2.xlsx")
     # malus3('malus3_grey_1', 5)
-    malus3('malus3_grey_2', 10)
+    # malus3('malus3_grey_2', 10)
     pass
