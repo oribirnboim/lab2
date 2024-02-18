@@ -49,7 +49,7 @@ def linear(x, a):
     return a*x
 
 
-def plot_phase_movement():
+def plot_phase_red():
     data, distance = get_data('chilary1')
     phase = []
     phase_err = []
@@ -96,5 +96,57 @@ def plot_phase_movement():
     plt.show()
 
 
+def plot_phase_green():
+    data, distance = get_data('malus_green')
+    phase = []
+    phase_err = []
+    for i in range(len(data)):
+        data_set = data[i]
+        x, y = data_set # commented code diplsys and prints everything this loop does
+        if distance[i]==20:
+            x, y = x[1:], y[1:]
+        print(len(x), len(y), distance[i])
+        plt.plot(x, y)
+        params, covariance = curve_fit(cos2, x, y, p0=[175, 0])
+        variance = np.diag(covariance)
+        print(params, distance[i])
+        print(variance)
+        phase.append(params[1])
+        # phase.append(x[np.argmax(y)])
+        phase_err.append(variance[1])
+        # r2 = r2_score(y, cos2(x, *params))
+        # print(r2)
+        x_fit = np.linspace(np.min(x), np.max(x), 1000)
+        y_fit = cos2(x_fit, *params)
+        plt.plot(x_fit, y_fit, label='fit')
+        plt.xlabel('Degrees [$^\circ$]', fontsize=14)
+        plt.ylabel('I [$\mu$A]', fontsize=14)
+        plt.grid()
+        plt.title(distance[i])
+        plt.legend()
+        plt.show()
+    phase, phase_err = np.array(phase), np.array(phase_err)
+    phase -= phase[np.argmax(phase)]
+    phase *= -1
+    distance -= distance[np.argmin(distance)]
+    distance_err = np.array([1 for _ in distance])
+    plt.errorbar(x=distance, y=phase, xerr=distance_err, yerr=phase_err, fmt='.', label='extracted phase')
+    params, covariance = curve_fit(linear, distance, phase)
+    variance = np.diag(covariance)
+    print(params)
+    print(variance)
+    r2 = r2_score(phase, linear(distance, *params))
+    print(r2)
+    x_fit = np.linspace(np.min(distance), np.max(distance), 1000)
+    y_fit = linear(x_fit, *params)
+    plt.plot(x_fit, y_fit, label='fit')
+    plt.legend()
+    plt.grid()
+    plt.xlabel('$d[cm]$')
+    plt.ylabel('$\phi[^\circ]$')
+    plt.show()
+
+
 if __name__ == "__main__":
-    plot_phase_movement()
+    plot_phase_green()
+    plot_phase_red()
