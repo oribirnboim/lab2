@@ -84,6 +84,43 @@ def plot_folder(folder):
     plt.show()
 
 
+def get_one_alpha(x, y, alpha):
+    indices = []
+    for i in range(len(x)):
+        a, b = x[i]
+        if a == alpha:
+            indices.append(i)
+    res_x = np.array([x[i][1] for i in indices])
+    res_y = np.array([y[i] for i in indices])
+    return res_x, res_y
+
+
+
+
+def plot_chosen_alphas():
+    params = np.array([162.17371554, 92.5429132,  -16.60241009,  18.01271223])
+    model = amp2
+    x, y = get_data('quarter_waveplate')
+    colors = ['b', 'g', 'r']
+    alphas = [10, 35, 80]
+    for i in range(3):
+        alpha = alphas[i]
+        color = colors[i]
+        theta, I = get_one_alpha(x, y, alpha)
+        theta_err = [2 for val in theta]
+        I_err = [2 for val in I]
+        plt.errorbar(x=theta, y=I, xerr=theta_err, yerr=I_err, color=color, fmt='.', label=f'$\\alpha={alpha}^\circ$')
+        x_fit = np.linspace(0, 360, 1000)
+        y_fit = np.array([amp2(np.array([alpha, v]), *params) for v in x_fit])
+        plt.plot(x_fit, y_fit, color=color, linestyle='--')
+
+    plt.grid()
+    plt.legend()
+    plt.xlabel('$\\theta$ [$^\circ$]')
+    plt.ylabel('I [$\mu$A]')
+    plt.show()
+
+        
 def d3_fit_quarter():
     x, y = get_data('quarter_waveplate')
     x_err = [2 for val in x]
@@ -219,3 +256,4 @@ if __name__ == "__main__":
     # fit_quarter()
     # fit_half()
     # plot_folder('quarter_waveplate')
+    plot_chosen_alphas()
