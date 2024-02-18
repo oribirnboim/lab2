@@ -179,7 +179,7 @@ def plot_halfwave():
         plt.errorbar(x, y, xerr=x_err, yerr=y_err, fmt='.', color=color)
         plt.plot(x_fit, y_fit, label=label, color=color)
 
-    plt.plot(roots, [0 for _ in roots], 'o', markersize=10, color='r', label='minimum points')
+    plt.plot(roots, [0 for _ in roots], 'o', markersize=10, color='r', label='minimum')
     plt.xlabel('$\\theta [^\circ]$')
     plt.ylabel('I $[\mu A]$')
     plt.legend()
