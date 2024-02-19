@@ -105,26 +105,26 @@ def plot_phase_green():
         x, y = data_set # commented code diplsys and prints everything this loop does
         if distance[i]==20:
             x, y = x[1:], y[1:]
-        print(len(x), len(y), distance[i])
-        plt.plot(x, y)
+        # print(len(x), len(y), distance[i])
+        # plt.plot(x, y)
         params, covariance = curve_fit(cos2, x, y, p0=[175, 0])
         variance = np.diag(covariance)
-        print(params, distance[i])
-        print(variance)
+        # print(params, distance[i])
+        # print(variance)
         phase.append(params[1])
         # phase.append(x[np.argmax(y)])
         phase_err.append(variance[1])
         # r2 = r2_score(y, cos2(x, *params))
         # print(r2)
-        x_fit = np.linspace(np.min(x), np.max(x), 1000)
-        y_fit = cos2(x_fit, *params)
-        plt.plot(x_fit, y_fit, label='fit')
-        plt.xlabel('Degrees [$^\circ$]', fontsize=14)
-        plt.ylabel('I [$\mu$A]', fontsize=14)
-        plt.grid()
-        plt.title(distance[i])
-        plt.legend()
-        plt.show()
+        # x_fit = np.linspace(np.min(x), np.max(x), 1000)
+        # y_fit = cos2(x_fit, *params)
+        # plt.plot(x_fit, y_fit, label='fit')
+        # plt.xlabel('Degrees [$^\circ$]', fontsize=14)
+        # plt.ylabel('I [$\mu$A]', fontsize=14)
+        # plt.grid()
+        # plt.title(distance[i])
+        # plt.legend()
+        # plt.show()
     phase, phase_err = np.array(phase), np.array(phase_err)
     phase -= phase[np.argmax(phase)]
     phase *= -1
@@ -145,6 +145,7 @@ def plot_phase_green():
     plt.xlabel('$d[cm]$')
     plt.ylabel('$\phi[^\circ]$')
     plt.show()
+
 
 
 if __name__ == "__main__":
