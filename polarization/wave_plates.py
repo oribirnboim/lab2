@@ -50,14 +50,26 @@ def plot_folder(folder_name):
     plt.show()
 
 
+def chi(I):
+    max = np.max(I)
+    min = np.min(I)
+    mean = (max+min)/2
+    amp = (max-min)/2
+    return amp/mean
+
+
 def quarter_polar():
     ax = plt.subplot(111, projection='polar')
-
-    for file in ['quarter_waveplate/plate35.xlsx', 'quarter_waveplate/plate350.xlsx', 'quarter_waveplate/plate80.xlsx']:
-        theta, power, alpha = get_single(file)
+    colors = ['b', 'g', 'r']
+    paths = ['quarter_waveplate/plate10.xlsx', 'quarter_waveplate/plate35.xlsx', 'quarter_waveplate/plate80.xlsx']
+    for i in range(3):
+        path = paths[i]
+        color = colors[i]
+        theta, power, alpha = get_single(path)
+        print(chi(power))
         theta = theta*np.pi/180
         theta_err, power_err = [0.03 for v in theta], [2 for v in power]
-        ax.errorbar(x=theta, y=power, xerr=theta_err, yerr=power_err, fmt='', linestyle='', label=f'$\\alpha={alpha}^\circ$')
+        ax.errorbar(x=theta, y=power, xerr=theta_err, yerr=power_err, fmt='', linestyle='', label=f'$\\alpha={alpha}^\circ$', color=color)
     
     ax.legend()
     ax.grid(True)
@@ -179,7 +191,7 @@ def plot_halfwave():
         plt.errorbar(x, y, xerr=x_err, yerr=y_err, fmt='.', color=color)
         plt.plot(x_fit, y_fit, label=label, color=color)
 
-    plt.plot(roots, [0 for _ in roots], 'o', markersize=10, color='r', label='minimum')
+    plt.plot(roots, [0 for _ in roots], 'o', markersize=10, color='r')
     plt.xlabel('$\\theta [^\circ]$')
     plt.ylabel('I $[\mu A]$')
     plt.legend()
@@ -198,7 +210,7 @@ def fit_half_plate(data_set):
 
 
 if __name__ == "__main__":
-    # quarter_polar()
-    plot_halfwave()
+    quarter_polar()
+    # plot_halfwave()
     # elliptical_polar()
 
