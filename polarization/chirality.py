@@ -149,7 +149,6 @@ def plot_phase_green():
     np.savez('green_graph', d=distance, p=phase, d_err=distance_err, p_err=phase_err, x_fit=x_fit, y_fit=y_fit)
 
 
-
 def plot_phase_orange():
     data, distance = get_data('chirality_orange')
     phase = []
@@ -159,25 +158,25 @@ def plot_phase_orange():
         x, y = data_set # commented code diplsys and prints everything this loop does
         if distance[i]==20:
             x, y = x[1:], y[1:]
-        # plt.plot(x, y)
+        plt.errorbar(x, y, xerr=[2 for _ in x], yerr=[0.25 for _ in y], fmt='.', label = 'data')
         params, covariance = curve_fit(cos2, x, y, p0=[175, 0])
         variance = np.diag(covariance)
-        # print(params, distance[i])
-        # print(variance)
+        print(params, distance[i])
+        print(variance)
         phase.append(params[1])
         # phase.append(x[np.argmax(y)])
         phase_err.append(variance[1])
-        # r2 = r2_score(y, cos2(x, *params))
-        # print(r2)
-        # x_fit = np.linspace(np.min(x), np.max(x), 1000)
-        # y_fit = cos2(x_fit, *params)
-        # plt.plot(x_fit, y_fit, label='fit')
-        # plt.xlabel('Degrees [$^\circ$]', fontsize=14)
-        # plt.ylabel('I [$\mu$A]', fontsize=14)
-        # plt.grid()
+        r2 = r2_score(y, cos2(x, *params))
+        print(r2)
+        x_fit = np.linspace(np.min(x), np.max(x), 1000)
+        y_fit = cos2(x_fit, *params)
+        plt.plot(x_fit, y_fit, label='fit')
+        plt.xlabel('Degrees [$^\circ$]', fontsize=14)
+        plt.ylabel('I [$\mu$A]', fontsize=14)
+        plt.grid()
         # plt.title(distance[i])
-        # plt.legend()
-        # plt.show()
+        plt.legend()
+        plt.show()
     phase, phase_err = np.array(phase), np.array(phase_err)
     phase -= phase[np.argmax(phase)]
     phase *= -1
@@ -229,6 +228,6 @@ def plot_all_colors():
 if __name__ == "__main__":
     # plot_phase_green()
     # plot_phase_red()
-    # plot_phase_orange()
-    plot_all_colors()
+    plot_phase_orange()
+    # plot_all_colors()
 
