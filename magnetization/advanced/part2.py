@@ -114,8 +114,7 @@ def plot_average_area_vs_voltage(folderpath, start_voltage, end_voltage):
     plt.figure(figsize=(10, 6))
     plt.plot(voltages, average_areas, marker='o', linestyle='', color='b')
     plt.xlabel('Voltage [V]')
-    plt.ylabel('Average Area of Labeled Regions (pixels)')
-    plt.title('Average Area of Labeled Regions vs. Voltage')
+    plt.ylabel('Average jump size [pixels]')
     plt.grid(True)
     plt.show()
 
