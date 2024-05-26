@@ -18,7 +18,7 @@ def threshold(image):
 
 def morpho(image):
     kernel = np.ones((3, 3), np.uint8)
-    return cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel, iterations=2)
+    return cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel, iterations=2)
 
 def label(image):
     labels = measure.label(image, connectivity=2)

@@ -8,8 +8,10 @@ def load_image(path):
 
 if __name__ == "__main__":
     # Load the two subsequent photos
-    image1 = load_image('part_2_1_up/20240521_095933_150.jpg')
-    image2 = load_image('part_2_1_up/20240521_095928_149.jpg')
+    # image1 = load_image('part_2_1_up/20240521_095933_150.jpg')
+    # image2 = load_image('part_2_1_up/20240521_095928_149.jpg')
+    image1 = load_image('part_2_1_up/20240521_100043_164.jpg')
+    image2 = load_image('part_2_1_up/20240521_100038_163.jpg')
 
     # Ensure both images have the same dimensions
     min_height = min(image1.shape[0], image2.shape[0])
