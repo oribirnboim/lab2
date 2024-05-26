@@ -36,42 +36,41 @@ def absdiff_folder(folderpath, respath):
         cv2.imwrite(diff_path, abs_diff)
 
 
+def process_difference_images(folderpath, output_folder):
+    # Ensure the output directory exists
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    
+    # List all jpg files in the folderpath
+    files = [f for f in os.listdir(folderpath) if f.endswith('.jpg')]
+    
+    # Sort files based on the counter in their names
+    files.sort(key=lambda f: int(f.split('_')[-1].split('.')[0]))
+    
+    for i, file in enumerate(files):
+        # Read the difference image
+        img_path = os.path.join(folderpath, file)
+        difference_image = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+        
+        # Apply the processing steps
+        blurred = cv2.GaussianBlur(difference_image, (5, 5), 0)
+        _, thresholded = cv2.threshold(blurred, 30, 255, cv2.THRESH_BINARY)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+        morph = cv2.morphologyEx(thresholded, cv2.MORPH_CLOSE, kernel)
+        labels, _ = label(morph)
+        color_labels = label2rgb(labels, bg_label=0)
+        
+        # Save the color labeled image
+        color_label_filename = f'color_label_{i+1}.jpg'
+        color_label_path = os.path.join(output_folder, color_label_filename)
+        plt.imsave(color_label_path, color_labels)
+
+
 if __name__ == "__main__":
-    # # Load the two subsequent photos
-    # # image1 = load_image('part_2_1_up/20240521_095933_150.jpg')
-    # # image2 = load_image('part_2_1_up/20240521_095928_149.jpg')
-    # image1 = load_image('part_2_1_up/20240521_100043_164.jpg')
-    # image2 = load_image('part_2_1_up/20240521_100038_163.jpg')
+    # folderpath = 'part_2_1_up'
+    # diff_path = 'diff_part_2_1_up'
+    # absdiff_folder(folderpath, diff_path)
 
-    # # Ensure both images have the same dimensions
-    # min_height = min(image1.shape[0], image2.shape[0])
-    # min_width = min(image1.shape[1], image2.shape[1])
-    # image1 = image1[:min_height, :min_width]
-    # image2 = image2[:min_height, :min_width]
-
-    # # Subtract the first image from the second one
-    # difference_image = cv2.absdiff(image2, image1)
-
-
-    # blurred = blur(difference_image)
-    # thresholded = threshold(blurred)
-    # morph = morpho(thresholded)
-    # labels, label_image = label(morph)
-    # color_labels = color_label_image(labels)
-
-    # # Display the results
-    # fig, ax = plt.subplots(1, 3, figsize=(24, 6))
-    # ax[0].imshow(difference_image, cmap='gray')
-    # ax[0].set_title('Image 1')
-    # ax[0].axis('off')
-
-    # ax[1].imshow(label_image, cmap='gray')
-    # ax[1].set_title('Labeled Binary Image')
-    # ax[1].axis('off')
-
-    # ax[2].imshow(color_labels)
-    # ax[2].set_title('Color Labeled Image')
-    # ax[2].axis('off')
-
-    # plt.show()
-    pass
+    diff_folderpath = 'diff_part_2_1_up'
+    output_folderpath = 'label_part_2_1_up'
+    process_difference_images(diff_folderpath, output_folderpath)
