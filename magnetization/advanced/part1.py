@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from skimage.color import label2rgb
 import os
 from pathlib import Path
+from scipy.spatial.distance import cdist
+import json
 
 def load_image(path):
     return cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
@@ -63,12 +65,99 @@ def visualize_variance(variance_image):
     plt.axis('off')
     plt.show()
 
+def select_defects(image):
+    plt.figure(figsize=(10, 8))
+    plt.title("Select Defects and Close Window")
+    plt.imshow(image, cmap='hot', interpolation='nearest')
+    points = plt.ginput(n=-1, timeout=0)
+    plt.close()
+    return points
+
+def save_defects(defects, filepath='defects.json'):
+    with open(filepath, 'w') as file:
+        json.dump(defects, file)
+
+def load_defects(filepath='defects.json'):
+    if Path(filepath).exists():
+        with open(filepath, 'r') as file:
+            defects = json.load(file)
+        return defects
+    return None
+
+def distance_from_defects(image, defects):
+    height, width = image.shape
+    distances = np.full((height, width), np.inf)
+    for defect in defects:
+        defect_y, defect_x = int(defect[1]), int(defect[0])
+        y, x = np.indices((height, width))
+        distances = np.minimum(distances, np.sqrt((x - defect_x)**2 + (y - defect_y)**2))
+    return distances
+
+def plot_variance_vs_distance(variance_image, distance_image):
+    distances = distance_image.flatten()
+    variances = variance_image.flatten()
+    plt.figure(figsize=(10, 8))
+    plt.scatter(distances, variances, alpha=0.5)
+    plt.title("Variance vs. Distance from Defects")
+    plt.xlabel("Distance from Defects (pixels)")
+    plt.ylabel("Variance")
+    plt.show()
+
+
+def crop_image(image, crop_percent=10):
+    """Crop the perimeter of the image by a given percentage."""
+    height, width = image.shape[:2]
+    crop_height = int(height * crop_percent / 100)
+    crop_width = int(width * crop_percent / 100)
+    cropped_image = image[crop_height:height-crop_height, crop_width:width-crop_width]
+    return cropped_image
+
+def crop_folder(input_folder, output_folder, crop_percent=10, extension="jpg"):
+    input_folder_path = Path(input_folder).resolve()
+    output_folder_path = Path(output_folder).resolve()
+    output_folder_path.mkdir(parents=True, exist_ok=True)
+
+    image_paths = sorted(input_folder_path.glob(f'*.{extension}'))
+    
+    for idx, image_path in enumerate(image_paths, start=1):
+        image = cv2.imread(str(image_path))
+        if image is None:
+            print(f"Failed to load image: {image_path}")
+            continue
+        
+        cropped_image = crop_image(image, crop_percent)
+        output_image_path = output_folder_path / f"{idx:04d}.{extension}"
+        cv2.imwrite(str(output_image_path), cropped_image)
+        print(f"Saved cropped image: {output_image_path}")
+
+
 if __name__ == "__main__":
-    folder_path = 'part_1_batch_3'
+    manual_selection = False
+    folder_path = 'p1b3'
     images = load_images_from_folder(folder_path, extension="jpg")
     
     if len(images) == 0:
         print(f"No images found in folder: {folder_path}")
     else:
         variance_image = calculate_variance(images)
-        visualize_variance(variance_image)
+        # visualize_variance(variance_image)
+        
+        # Load defects if they exist, otherwise select and save them
+        defect_filename = 'defects_' + folder_path + '.json'
+        defects = load_defects(defect_filename)
+        if (defects is None) or manual_selection:
+            defects = select_defects(variance_image)
+            save_defects(defects, defect_filename)
+        
+        # Calculate distance from defects
+        distance_image = distance_from_defects(variance_image, defects)
+        
+        # Plot variance vs. distance
+        plot_variance_vs_distance(variance_image, distance_image)
+
+
+
+    # folder_path = 'part_1_batch_3'
+    # output_folder = 'p1b3'
+    # crop_percent = 20
+    # crop_folder(folder_path, output_folder, crop_percent)
