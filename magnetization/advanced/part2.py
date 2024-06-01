@@ -2,6 +2,10 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from part1 import *
+from tkinter import Tk, Label, Button, filedialog
+from PIL import Image, ImageTk
+import shutil
+
 
 def load_image(path):
     return cv2.imread(path, cv2.IMREAD_GRAYSCALE)
@@ -141,18 +145,59 @@ def get_label_sizes(image_path):
     return areas
 
 
+class PhotoSelector:
+    def __init__(self, root, input_folder, output_folder):
+        self.root = root
+        self.root.title("Photo Selector")
+        self.input_folder = input_folder
+        self.output_folder = output_folder
+        self.photo_files = [f for f in os.listdir(input_folder) if f.lower().endswith('.jpg')]
+        self.current_index = 0
+        self.image_label = Label(root)
+        self.image_label.pack()
+        self.next_button = Button(root, text="Next", command=self.show_next_photo)
+        self.next_button.pack(side="right")
+        self.keep_button = Button(root, text="Keep", command=self.keep_photo)
+        self.keep_button.pack(side="left")
+        self.show_photo()
+
+    def show_photo(self):
+        if self.current_index < len(self.photo_files):
+            image_path = os.path.join(self.input_folder, self.photo_files[self.current_index])
+            image = Image.open(image_path)
+            image.thumbnail((800, 600))
+            photo = ImageTk.PhotoImage(image)
+            self.image_label.config(image=photo)
+            self.image_label.image = photo
+        else:
+            self.image_label.config(text="No more photos")
+
+    def show_next_photo(self):
+        self.current_index += 1
+        if self.current_index < len(self.photo_files):
+            self.show_photo()
+        else:
+            self.image_label.config(text="No more photos")
+
+    def keep_photo(self):
+        if self.current_index < len(self.photo_files):
+            source_path = os.path.join(self.input_folder, self.photo_files[self.current_index])
+            dest_path = os.path.join(self.output_folder, self.photo_files[self.current_index])
+            shutil.copy(source_path, dest_path)
+            self.show_next_photo()
+
 
 if __name__ == "__main__":
     # folderpath = 'part_2_batch_2'
     # diff_path = 'diff_part_2_batch_2'
     # absdiff_folder(folderpath, diff_path)
 
-    # diff_folderpath = 'diff_part_2_batch_2'
-    # output_folderpath = 'label_part_2_batch_2'
-    # process_difference_images(diff_folderpath, output_folderpath)
+    diff_folderpath = 'good_p21up'
+    output_folderpath = 'good_p21up_labeled'
+    process_difference_images(diff_folderpath, output_folderpath)
 
-    diff_folderpath = 'diff_part_2_1_up'
-    plot_average_area_vs_voltage(diff_folderpath, 0.02, 6.04)
+    # diff_folderpath = 'diff_part_2_1_up'
+    # plot_average_area_vs_voltage(diff_folderpath, 0.02, 6.04)
 
 
     # diff_folderpath = 'diff_part_2_batch_2'
@@ -161,3 +206,13 @@ if __name__ == "__main__":
 
     # diff_photo = 'diff_part_2_1_up/diff_1.jpg'
     # print(get_label_sizes(diff_photo))
+
+
+    # root = Tk()
+    # root.withdraw()  # Hide the root window
+    # input_folder = filedialog.askdirectory(title="Select Input Folder with JPG Photos")
+    # output_folder = filedialog.askdirectory(title="Select Output Folder for Kept Photos")
+    # if input_folder and output_folder:
+    #     root.deiconify()  # Show the root window
+    #     app = PhotoSelector(root, input_folder, output_folder)
+    #     root.mainloop()
