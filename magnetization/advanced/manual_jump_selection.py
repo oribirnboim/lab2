@@ -135,5 +135,5 @@ def main():
     root.mainloop()
 
 if __name__ == '__main__':
-    # main()
-    plot_histogram_from_json('test_lengths.json')
+    main()
+    # plot_histogram_from_json('test_lengths.json')
