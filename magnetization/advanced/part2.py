@@ -188,13 +188,13 @@ class PhotoSelector:
 
 
 if __name__ == "__main__":
-    # folderpath = 'part_2_batch_2'
-    # diff_path = 'diff_part_2_batch_2'
-    # absdiff_folder(folderpath, diff_path)
+    folderpath = r'part_3\part_3_down'
+    diff_path = 'diff_part_3_down'
+    absdiff_folder(folderpath, diff_path)
 
-    diff_folderpath = 'good_p21up'
-    output_folderpath = 'good_p21up_labeled'
-    process_difference_images(diff_folderpath, output_folderpath)
+    # diff_folderpath = 'good_p21up'
+    # output_folderpath = 'good_p21up_labeled'
+    # process_difference_images(diff_folderpath, output_folderpath)
 
     # diff_folderpath = 'diff_part_2_1_up'
     # plot_average_area_vs_voltage(diff_folderpath, 0.02, 6.04)

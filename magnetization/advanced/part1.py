@@ -55,13 +55,16 @@ def calculate_variance(images):
     stacked_images = np.stack(images, axis=-1)
     # Calculate the variance along the third dimension (axis=-1)
     variance_image = np.var(stacked_images, axis=-1)
+    print(variance_image)
     return variance_image
 
 def visualize_variance(variance_image):
     plt.figure(figsize=(10, 8))
-    plt.title("Variance Map of Magnetic Domains")
-    plt.imshow(variance_image, cmap='hot', interpolation='nearest')
-    plt.colorbar(label='Variance')
+    plt.title("Variance Map of Magnetic Domains", fontsize=20)
+    img = plt.imshow(variance_image, cmap='hot', interpolation='nearest')
+    cbar = plt.colorbar(img, label='Variance')
+    cbar.ax.tick_params(labelsize=12)  # Increase colorbar text size
+    cbar.set_label('Variance', fontsize=20)  # Increase colorbar label size
     plt.axis('off')
     plt.show()
 
@@ -98,9 +101,9 @@ def plot_variance_vs_distance(variance_image, distance_image):
     variances = variance_image.flatten()
     plt.figure(figsize=(10, 8))
     plt.scatter(distances, variances, alpha=0.5)
-    plt.title("Variance vs. Distance from Defects")
-    plt.xlabel("Distance from Defects (pixels)")
-    plt.ylabel("Variance")
+    plt.title("Variance vs. Distance from Defects", fontsize=20)
+    plt.xlabel("Distance from Defects (pixels)", fontsize=15)
+    plt.ylabel("Variance", fontsize=15)
     plt.show()
 
 
@@ -131,11 +134,13 @@ def crop_folder(input_folder, output_folder, crop_percent=10, extension="jpg"):
         print(f"Saved cropped image: {output_image_path}")
 
 
+
 if __name__ == "__main__":
-    manual_selection = False
+    manual_selection = True
     folder_path = 'p1b3'
     images = load_images_from_folder(folder_path, extension="jpg")
-    
+
+
     if len(images) == 0:
         print(f"No images found in folder: {folder_path}")
     else:

@@ -5,13 +5,14 @@ from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk, ImageDraw
 import matplotlib.pyplot as plt
 
+
 class PhotoAnnotator:
     def __init__(self, root, folder_path):
         self.root = root
         self.folder_path = folder_path
         self.images = [f for f in os.listdir(folder_path) if f.endswith('.jpg')]
         self.current_image_index = 0
-        self.line_lengths = []
+        self.image_data = []
         self.lines = []
 
         self.root.bind('<z>', self.undo_last_line)
@@ -28,7 +29,7 @@ class PhotoAnnotator:
     def load_image(self):
         if self.current_image_index >= len(self.images):
             self.prompt_save_json()
-            self.show_histogram()
+            self.show_histograms()
             return
 
         image_path = os.path.join(self.folder_path, self.images[self.current_image_index])
@@ -50,18 +51,15 @@ class PhotoAnnotator:
     def stop_line(self, event):
         if hasattr(self, 'current_line') and len(self.current_line) > 1:
             self.lines.append(self.current_line)
-            # print(f"Line added: {self.current_line}")  # Debug print
             del self.current_line
 
     def undo_last_line(self, event):
         if self.lines:
-            removed_line = self.lines.pop()
-            # print(f"Line removed: {removed_line}")  # Debug print
+            self.lines.pop()
             self.redraw()
 
     def next_image(self, event):
-        self.save_line_lengths()
-        # print(f"Lines for image {self.images[self.current_image_index]}: {self.lines}")  # Debug print
+        self.save_image_data()
         self.current_image_index += 1
         self.load_image()
 
@@ -70,57 +68,84 @@ class PhotoAnnotator:
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
         for line in self.lines:
             for i in range(1, len(line)):
-                self.canvas.create_line(line[i-1][0], line[i-1][1], line[i][0], line[i][1], fill='red')
+                self.canvas.create_line(line[i - 1][0], line[i - 1][1], line[i][0], line[i][1], fill='red')
 
-    def save_line_lengths(self):
-        for line in self.lines:
-            length = sum(((line[i][0] - line[i-1][0])**2 + (line[i][1] - line[i-1][1])**2)**0.5 for i in range(1, len(line)))
-            self.line_lengths.append(length)
-        # print(f"Line lengths: {self.line_lengths}")  # Debug print
+    def save_image_data(self):
+        line_lengths = [sum(((line[i][0] - line[i - 1][0]) ** 2 + (line[i][1] - line[i - 1][1]) ** 2) ** 0.5 for i in
+                            range(1, len(line))) for line in self.lines]
+        self.image_data.append({
+            'image_name': self.images[self.current_image_index],
+            'line_lengths': line_lengths,
+            'number_of_lines': len(self.lines)
+        })
 
     def prompt_save_json(self):
         save_path = filedialog.asksaveasfilename(
             defaultextension='.json',
             filetypes=[('JSON files', '*.json')],
-            title='Save Line Lengths',
+            title='Save Image Data',
             initialdir=self.folder_path
         )
         if save_path:
-            self.save_line_lengths_to_json(save_path)
+            self.save_data_to_json(save_path)
         else:
             messagebox.showinfo('Info', 'Save operation cancelled.')
 
-    def save_line_lengths_to_json(self, save_path):
+    def save_data_to_json(self, save_path):
         with open(save_path, 'w') as json_file:
-            json.dump(self.line_lengths, json_file)
-        messagebox.showinfo('Info', f'Line lengths saved to {save_path}')
+            json.dump(self.image_data, json_file, indent=4)
+        messagebox.showinfo('Info', f'Image data saved to {save_path}')
 
-    def show_histogram(self):
-        if not self.line_lengths:
+    def show_histograms(self):
+        if not self.image_data:
             messagebox.showinfo('Info', 'No lines drawn.')
             self.root.quit()
             return
-        
-        plt.hist(self.line_lengths, bins=20)
-        plt.xlabel('Line Length')
-        plt.ylabel('Frequency')
-        plt.title('Histogram of Line Lengths')
-        plt.show()
+
+        self.plot_histogram_line_lengths()
+        self.plot_histogram_number_of_lines()
         self.root.quit()
+
+    def plot_histogram_line_lengths(self):
+        line_lengths = [length for image in self.image_data for length in image['line_lengths']]
+        if line_lengths:
+            plt.hist(line_lengths, bins=20)
+            plt.xlabel('Line Length')
+            plt.ylabel('Frequency')
+            plt.title('Histogram of Line Lengths')
+            plt.show()
+
+    def plot_histogram_number_of_lines(self):
+        number_of_lines = [image['number_of_lines'] for image in self.image_data]
+        if number_of_lines:
+            plt.hist(number_of_lines, bins=40)
+            plt.xlabel('Number of Jumps')
+            plt.ylabel('Frequency')
+            plt.title('Histogram of Number of Lines per Image')
+            plt.show()
+
 
 def plot_histogram_from_json(json_path):
     with open(json_path, 'r') as json_file:
-        line_lengths = json.load(json_file)
-    
-    if not line_lengths:
-        print("No data found in the JSON file.")
-        return
-    
-    plt.hist(line_lengths, bins=20)
-    plt.xlabel('Line Length')
-    plt.ylabel('Frequency')
-    plt.title('Histogram of Line Lengths from JSON')
-    plt.show()
+        image_data = json.load(json_file)
+
+    line_lengths = [length for image in image_data for length in image['line_lengths']]
+    number_of_lines = [image['number_of_lines'] for image in image_data]
+
+    if line_lengths:
+        plt.hist(line_lengths, bins=20)
+        plt.xlabel('Line Length')
+        plt.ylabel('Frequency')
+        plt.title('Histogram of Line Lengths from JSON')
+        plt.show()
+
+    if number_of_lines:
+        plt.hist(number_of_lines, bins=20)
+        plt.xlabel('Number of Jumps')
+        plt.ylabel('Frequency')
+        plt.title('Histogram for Number of Jumps')
+        plt.show()
+
 
 def main():
     root = tk.Tk()
@@ -134,6 +159,8 @@ def main():
     app = PhotoAnnotator(root, folder_path)
     root.mainloop()
 
+
 if __name__ == '__main__':
     main()
+    plot_histogram_from_json('p3b1_jumps.json')
     # plot_histogram_from_json('test_lengths.json')
