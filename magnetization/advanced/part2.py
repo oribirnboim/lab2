@@ -188,8 +188,8 @@ class PhotoSelector:
 
 
 if __name__ == "__main__":
-    folderpath = r'part_3\part_3_down'
-    diff_path = 'diff_part_3_down'
+    folderpath = 'part_2_batch_3_down'
+    diff_path = 'diff_part_2_batch_3_down'
     absdiff_folder(folderpath, diff_path)
 
     # diff_folderpath = 'good_p21up'
