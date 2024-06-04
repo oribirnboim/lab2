@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 from scipy.spatial.distance import cdist
 import json
+from PIL import Image
 
 def load_image(path):
     return cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
@@ -98,6 +99,9 @@ def plot_variance_vs_distance(variance_image, distance_image):
     variances = variance_image.flatten()
     plt.figure(figsize=(10, 8))
     plt.scatter(distances, variances, alpha=0.5)
+    correlation_matrix = np.corrcoef(distances, variances)
+    correlation_coefficient = correlation_matrix[0, 1]
+    print(f'Correlation coefficient: {correlation_coefficient}', len(distances))
     plt.title("Variance vs. Distance from Defects")
     plt.xlabel("Distance from Defects (pixels)")
     plt.ylabel("Variance")
@@ -131,6 +135,28 @@ def crop_folder(input_folder, output_folder, crop_percent=10, extension="jpg"):
         print(f"Saved cropped image: {output_image_path}")
 
 
+def show_defects(variance_image, json_path):
+    with open(json_path, 'r') as file:
+        coordinates = json.load(file)
+    plt.imshow(variance_image, cmap='hot', interpolation='nearest')
+    plt.colorbar(label='Variance')
+    plt.axis('off')
+    for coord in coordinates:
+        plt.plot(coord[0], coord[1], 'bx')  # 'ro' means red color, circle marker
+    plt.show()
+
+
+def show_defects_from_path(image_path, json_path):
+    image = Image.open(image_path)
+    with open(json_path, 'r') as file:
+        coordinates = json.load(file)
+    plt.imshow(image)
+    plt.axis('off')  # Hide the axes
+    for coord in coordinates:
+        plt.plot(coord[0], coord[1], 'bx')  # 'bx' means blue color, cross marker
+    plt.show()
+
+
 if __name__ == "__main__":
     manual_selection = False
     folder_path = 'p1b3'
@@ -140,7 +166,8 @@ if __name__ == "__main__":
         print(f"No images found in folder: {folder_path}")
     else:
         variance_image = calculate_variance(images)
-        # visualize_variance(variance_image)
+        # show_defects(variance_image, 'defects_p1b3.json')
+        visualize_variance(variance_image)
         
         # Load defects if they exist, otherwise select and save them
         defect_filename = 'defects_' + folder_path + '.json'
@@ -161,3 +188,7 @@ if __name__ == "__main__":
     # output_folder = 'p1b3'
     # crop_percent = 20
     # crop_folder(folder_path, output_folder, crop_percent)
+
+    # show_defects_from_path(r"p1b3\0015.jpg", 'defects_p1b3.json')
+
+    

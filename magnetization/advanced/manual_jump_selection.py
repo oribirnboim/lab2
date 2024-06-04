@@ -116,10 +116,10 @@ def plot_histogram_from_json(json_path):
         print("No data found in the JSON file.")
         return
     
-    plt.hist(line_lengths, bins=20)
-    plt.xlabel('Line Length')
+    plt.hist(line_lengths, bins=40)
+    plt.xlabel('jump size [N pixels]')
     plt.ylabel('Frequency')
-    plt.title('Histogram of Line Lengths from JSON')
+    plt.grid()
     plt.show()
 
 def main():
@@ -135,5 +135,6 @@ def main():
     root.mainloop()
 
 if __name__ == '__main__':
-    main()
-    # plot_histogram_from_json('test_lengths.json')
+    # main()
+    plot_histogram_from_json('p2b3down_jumps.json')
+    # plot_histogram_from_json('p2b2_jumps.json')
