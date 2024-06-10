@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk, ImageDraw
 import matplotlib.pyplot as plt
+import pandas as pd
 
 class PhotoAnnotator:
     def __init__(self, root, folder_path):
@@ -134,7 +135,45 @@ def main():
     app = PhotoAnnotator(root, folder_path)
     root.mainloop()
 
+
+def excel_to_dict(file_path):
+    # Read the Excel file
+    df = pd.read_excel(file_path)
+    
+    # Ensure there are exactly two columns
+    if df.shape[1] != 2:
+        raise ValueError("Excel file must have exactly two columns")
+    
+    # Convert the DataFrame to a dictionary
+    result_dict = dict(zip(df.iloc[:, 0], df.iloc[:, 1]))
+    
+    return result_dict
+
+
+def plot_jumps_voltage(json_path, excel_path):
+    def get_v(name):
+        name = name[5:-4]
+        print(name)
+        return 0
+    with open(json_path, 'r') as json_file:
+        line_lengths = json.load(json_file)
+    
+    if not line_lengths:
+        print("No data found in the JSON file.")
+        return
+    for photo in line_lengths:
+        lengths = photo['line_lengths']
+        v = get_v(photo['image_name'])
+        voltage = [v for l in lengths]
+        plt.scatter(voltage, lengths)
+    plt.grid()
+    plt.xlabel('voltage [V]')
+    plt.ylabel('jump size')
+    plt.show()
+
+
 if __name__ == '__main__':
     # main()
-    plot_histogram_from_json('p2b3down_jumps.json')
+    # plot_histogram_from_json('p2b3down_jumps.json')
     # plot_histogram_from_json('p2b2_jumps.json')
+    plot_jumps_voltage('p3b1_jumps.json')
