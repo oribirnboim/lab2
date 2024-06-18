@@ -42,12 +42,12 @@ def plot_single_slit(file_path):
     v, i = load_data(file_path)
     angle = get_angle(v)
     tan_angle = np.tan(angle)
-    x = angle
+    x = tan_angle
     plt.plot(x, i)
     
 
     def model(x, amp, stretch):
-        return amp*np.sinc(x/stretch)**2
+        return amp*np.sinc(x*np.pi/stretch)**2
     
     popt, pcov = curve_fit(model, angle, i)
     perr = np.sqrt(np.diag(pcov))
@@ -74,7 +74,7 @@ def plot_single_slit(file_path):
 
 if __name__ == "__main__":
     print(width_prediction(2*np.power(10., -5), 632.8*np.power(10., -9)))
-    # plot_single_slit('1_slit_0.02a__no_aperture_1.csv')
-    plot_single_slit('1_slit_0.02a__no_aperture_2.csv')
+    plot_single_slit('1_slit_0.02a__no_aperture_1.csv')
+    # plot_single_slit('1_slit_0.02a__no_aperture_2.csv')
     # plot_single_slit('1_slit_0.02a_aperture0.1_1.csv')
     # plot_single_slit('1_slit_0.02a_aperture0.1_2.csv')
