@@ -9,7 +9,7 @@ calibrated_values = (-0.12245, 0.17400)
 
 
 
-def get_angle(v):
+def get_angle(v, calibrated_values):
     a, b = calibrated_values
     return a*v + b
 
@@ -40,7 +40,7 @@ def width_prediction(w, lamda):
 
 def plot_single_slit(file_path):
     v, i = load_data(file_path)
-    angle = get_angle(v)
+    angle = get_angle(v, calibrated_values)
     tan_angle = np.tan(angle)
     x = tan_angle
     plt.plot(x, i)
