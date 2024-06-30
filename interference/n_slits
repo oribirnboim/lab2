@@ -56,11 +56,11 @@ def generate_message(p0, N, lamda):
 
 
 if __name__ == "__main__":
-    file_path = '4_slits_0.04a_0.125d_1.csv'
-    p0 = [4*np.power(10., -5) , 1.25*np.power(10., -4), 1]
-    print(generate_message(p0, 4, 632.8*np.power(10., -9)))
-    plot_n(file_path, 4, 632.8*np.power(10., -9), offset=0.00, p0=p0)
-    # file_path = '5_slits_0.04a_0.125d_1.csv'
+    # file_path = '4_slits_0.04a_0.125d_1.csv'
     # p0 = [4*np.power(10., -5) , 1.25*np.power(10., -4), 1]
-    # print(generate_message(p0, 5, 632.8*np.power(10., -9)))
-    # plot_n(file_path, 5, 632.8*np.power(10., -9), offset=0.002, p0=p0)
+    # print(generate_message(p0, 4, 632.8*np.power(10., -9)))
+    # plot_n(file_path, 4, 632.8*np.power(10., -9), offset=0.00, p0=p0)
+    file_path = '5_slits_0.04a_0.125d_1.csv'
+    p0 = [4*np.power(10., -5) , 1.25*np.power(10., -4), 1]
+    print(generate_message(p0, 5, 632.8*np.power(10., -9)))
+    plot_n(file_path, 5, 632.8*np.power(10., -9), offset=0.002, p0=p0)
