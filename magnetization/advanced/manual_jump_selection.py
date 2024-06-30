@@ -117,8 +117,9 @@ def plot_histogram_from_json(json_path):
         print("No data found in the JSON file.")
         return
     
-    plt.hist(line_lengths, bins=40)
+    plt.hist(line_lengths, bins=500)
     plt.xlabel('jump size [N pixels]')
+    plt.xlim([0, 600])
     plt.ylabel('Frequency')
     plt.grid()
     plt.show()
@@ -176,5 +177,5 @@ def plot_jumps_voltage(json_path, excel_path):
 if __name__ == '__main__':
     # main()
     # plot_histogram_from_json('p2b3down_jumps.json')
-    # plot_histogram_from_json('p2b2_jumps.json')
-    plot_jumps_voltage('p3b1_jumps.json', 'data_organized.xlsx')
+    plot_histogram_from_json('p2b2_jumps.json')
+    # plot_jumps_voltage('p3b1_jumps.json', 'data_organized.xlsx')
