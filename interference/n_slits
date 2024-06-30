@@ -1,0 +1,66 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from single_slit import get_angle, truncate_at_nans
+from scipy.optimize import curve_fit
+from sklearn.metrics import r2_score
+
+
+calibrated_values = (-0.10387617716748218, -0.11527878759453152)
+dist = 0.5 # length of rotating arm
+
+
+
+def load_data(file_path):
+    df = pd.read_csv(file_path, usecols=[1, 2])
+    v = df.iloc[:,1]
+    intensity = df.iloc[:,0]
+    return truncate_at_nans(v, intensity)
+
+
+def plot_n(file_path, N, lamda, offset = 0, p0=None):
+    v, i = load_data(file_path)
+    angle = get_angle(v, calibrated_values) + offset
+    tan_angle = np.tan(angle)
+    # x = tan_angle
+    x = angle
+    plt.plot(x, i)
+
+    def model(x, a, d, i0):
+        sinc = np.sinc(a*np.sin(x)/lamda)
+        sin = np.sin(N*np.pi*d*np.sin(x)/lamda)/np.sin(np.pi*d*np.sin(x)/lamda)
+        return i0*sin**2*sinc**2 + 0.025
+    
+    popt, pcov = curve_fit(model, angle, i, p0=p0)
+    perr = np.sqrt(np.diag(pcov))
+    
+    r2 = r2_score(i, model(x, *popt))
+    print('r^2 score = ', r2)
+    print('fit parameters:', generate_message(popt, 4, 632.8*np.power(10., -9)))
+    print('fit error:', generate_message(perr, 4, 632.8*np.power(10., -9)))
+
+    x_fit = np.linspace(np.min(x), np.max(x), 30000)
+    y_fit = model(x_fit, *popt)
+    plt.plot(x_fit, y_fit)
+    plt.xlim([-0.05, 0.05])
+    # plt.xlabel(r'tan($\alpha$)')
+    plt.xlabel(r'$\alpha$')
+    plt.ylabel('relative intensity')
+    plt.grid()
+    plt.show()
+
+
+def generate_message(p0, N, lamda):
+    a, d, i0 = p0
+    return f"N={N}, lamda={lamda}, a={a}, d={d}, I0={i0}"
+
+
+if __name__ == "__main__":
+    file_path = '4_slits_0.04a_0.125d_1.csv'
+    p0 = [4*np.power(10., -5) , 1.25*np.power(10., -4), 1]
+    print(generate_message(p0, 4, 632.8*np.power(10., -9)))
+    plot_n(file_path, 4, 632.8*np.power(10., -9), offset=0.00, p0=p0)
+    # file_path = '5_slits_0.04a_0.125d_1.csv'
+    # p0 = [4*np.power(10., -5) , 1.25*np.power(10., -4), 1]
+    # print(generate_message(p0, 5, 632.8*np.power(10., -9)))
+    # plot_n(file_path, 5, 632.8*np.power(10., -9), offset=0.002, p0=p0)
