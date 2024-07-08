@@ -42,12 +42,12 @@ def plot_single_slit(file_path):
     v, i = load_data(file_path)
     angle = get_angle(v, calibrated_values)
     tan_angle = np.tan(angle)
-    x = tan_angle
-    plt.plot(x, i)
+    x = angle
+    plt.plot(x, i, label='data')
     
 
     def model(x, amp, stretch):
-        return amp*np.sinc(x*np.pi/stretch)**2
+        return amp*np.sinc(x/stretch/np.pi)**2
     
     popt, pcov = curve_fit(model, angle, i)
     perr = np.sqrt(np.diag(pcov))
@@ -64,10 +64,11 @@ def plot_single_slit(file_path):
 
     x_fit = np.linspace(np.min(x), np.max(x), 3000)
     y_fit = model(x_fit, *popt)
-    plt.plot(x_fit, y_fit)
+    plt.plot(x_fit, y_fit, label='fit')
 
-    plt.xlabel(r'tan($\alpha$)')
+    plt.xlabel(r'$\theta[rad]$')
     plt.ylabel('relative intensity')
+    plt.legend()
     plt.grid()
     plt.show()
 

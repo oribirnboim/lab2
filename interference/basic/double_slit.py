@@ -24,7 +24,7 @@ def plot_double(file_path):
     tan_angle = np.tan(angle)
     # x = tan_angle
     x = angle
-    plt.plot(x, i)
+    plt.plot(x, i, label='data')
 
     def model(x, amp, width, k):
         x = x
@@ -44,12 +44,13 @@ def plot_double(file_path):
 
     x_fit = np.linspace(np.min(x), np.max(x), 3000)
     y_fit = model(x_fit, *popt)
-    plt.plot(x_fit, y_fit)
+    plt.plot(x_fit, y_fit, label='fit')
     plt.xlim([-0.05, 0.05])
-    # plt.xlabel(r'tan($\alpha$)')
-    plt.xlabel(r'$\alpha$')
+    # plt.xlabel(r'tan($\theta$)')
+    plt.xlabel(r'$\theta[rads]$')
     plt.ylabel('relative intensity')
     plt.grid()
+    plt.legend()
     plt.show()
 
 
@@ -60,6 +61,38 @@ def prediction(w, lamda, d):
 
 
 
+
+
+def plot_d_fit():
+    k = np.array([585, 1188, 2332])
+    k_err = np.array([25, 50, 100])
+    d = np.array([1.25, 2.5, 5])
+    plt.errorbar(x=d, y=k, yerr=k_err, fmt='.', label='data')
+    xlim = (0, 7)
+    ylim = (0, 3000)
+
+    def prediction(d):
+        return np.power(10., -4) * d * np.pi / (632.8*np.power(10., -9))
+    
+    r2 = r2_score(k, prediction(d))
+    print(f'r^2 value is {r2}')
+    
+    d_fit = np.linspace(*xlim, 1000)
+    k_fit = prediction(d_fit)
+
+    plt.plot(d_fit, k_fit, label='prediction')
+
+
+    plt.ylabel(r'$k_{eff}[1]$')
+    plt.xlabel(r'$d[10^{-4}m]$')
+    plt.xlim(*xlim)
+    plt.ylim(*ylim)
+    plt.grid()
+    plt.legend()
+    plt.show()
+
+
+
 if __name__ == "__main__":
     file_path = '2_slits_0.04a_0.125d_aperture0.1_3.csv'
     print(*prediction(0.00004, 632.8*np.power(10., -9), 0.000125))
@@ -67,3 +100,8 @@ if __name__ == "__main__":
     # file_path = '2_slits_0.04a_0.25d_1.csv'
     # print(*prediction(0.00004, 632.8*np.power(10., -9), 0.00025))
     # plot_double(file_path)
+    # file_path = '2_slits_0.04a_0.5d_1.csv'
+    # print(*prediction(0.00004, 632.8*np.power(10., -9), 0.00025))
+    # plot_double(file_path)
+
+    # plot_d_fit()
