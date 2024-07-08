@@ -34,8 +34,8 @@ def load_data(file_path):
 
 
 
-def width_prediction(w, lamda):
-    return 2*lamda/w
+def width_prediction(a, lamda):
+    return 2*lamda/a
 
 
 def plot_single_slit(file_path):
