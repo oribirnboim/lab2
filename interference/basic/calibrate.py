@@ -25,15 +25,15 @@ def extract_angle(file_name):
 
 
 def plot_calibration():
-    #week 1 calibration
-    # file_path1 = 'angles/angles_0_2_5_7_10_12_15.csv'
-    # file_path2 = 'angles/angles_-1_-2_-3_-4_-5_-8_-10.csv'
-    # data = load_data(file_path1, [1+2*i for i in range(7)]) + load_data(file_path2, [1+2*i for i in range(7)])
-    # angle = np.array([0, 2, 5, 7, 10, 12, 15, -1, -2, -3, -4, -5, -8, -10])
+    # week 1 calibration
+    file_path1 = 'angles/angles_0_2_5_7_10_12_15.csv'
+    file_path2 = 'angles/angles_-1_-2_-3_-4_-5_-8_-10.csv'
+    data = load_data(file_path1, [1+2*i for i in range(7)]) + load_data(file_path2, [1+2*i for i in range(7)])
+    angle = np.array([0, 2, 5, 7, 10, 12, 15, -1, -2, -3, -4, -5, -8, -10])
 
-    file_path = 'angles/angles_12_10_8_6_4_2_0.csv'
-    data = load_data(file_path, range(7))
-    angle = np.array([12, 10, 8, 6, 4, 2, 0])
+    # file_path = 'angles/angles_12_10_8_6_4_2_0.csv'
+    # data = load_data(file_path, range(7))
+    # angle = np.array([12, 10, 8, 6, 4, 2, 0])
 
     angle_err = np.array([0.25 for a in angle])
     angle = angle*np.pi/180
@@ -61,7 +61,7 @@ def plot_calibration():
     print('parameters: ', *popt)
 
     plt.xlabel('voltage [V]')
-    plt.ylabel('angle [rads]')
+    plt.ylabel(r'$\theta$ [rads]')
     plt.legend()
     plt.grid()
     plt.show()

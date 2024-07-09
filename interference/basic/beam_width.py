@@ -49,8 +49,8 @@ def plot_width():
 
     plt.xlim(*xlim)
     plt.ylim(*ylim)
-    plt.ylabel('main beam width [rads]')
-    plt.xlabel(r'aperture width $[10^{-5} m]$')
+    plt.ylabel(r'$\Delta\theta$ [rads]')
+    plt.xlabel(r'a $[10^{-5} m]$')
     plt.grid()
     plt.legend()
     plt.show()
