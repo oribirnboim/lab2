@@ -38,9 +38,14 @@ class Wave:
                 intensity[i, j] = self.intensity(r)
         return intensity
 
-    def plot_plane_intensity(self, intensity: array, side_length: float) -> None:
+    def plot_plane_intensity(self, intensity: array, side_length: float, threshold: float = None) -> None:
         plt.figure()
-        plt.imshow(intensity, extent=(-side_length/2, side_length/2, -side_length/2, side_length/2), origin='lower', cmap='RdBu')
+        if threshold:
+            intensity[intensity < threshold] = 0
+            intensity[intensity > 0] = 1
+            plt.imshow(intensity, extent=(-side_length/2, side_length/2, -side_length/2, side_length/2), origin='lower', cmap='gray')
+        else:
+            plt.imshow(intensity, extent=(-side_length/2, side_length/2, -side_length/2, side_length/2), origin='lower', cmap='RdBu')
         plt.colorbar(label='Intensity')
         plt.xlabel('x')
         plt.ylabel('y')
@@ -163,17 +168,17 @@ if __name__ == "__main__":
     # masked_wave.plot_plane_intensity(final_intensity)
 
 
-    l = 0.5
-    a = 0.004
-    d = 0.0015
-    num_points = 200
+    l = 1.2
+    a = 0.03
+    d = 0.0065
+    num_points = 400
     plane = PlaneWave(amp=1, r0=array([0,0,0]), source_phase=0, wavelength=WL, normal=array([1, 0, 0])/np.sqrt(2))
     point1 = PointWave(l, array([0, d/2, 0]), 0, WL)
     point2 = PointWave(l, array([0, -d/2, 0]), 0, WL)
     wave = Wave([plane, point1, point2])
     points = generate_3d_grid(array([l, 0, 0]), a, num_points, 0)
     intensity = wave.get_plane_intensity(points)
-    wave.plot_plane_intensity(intensity, a)
+    wave.plot_plane_intensity(intensity, a, threshold=1.5)
 
 
     # a = 0.004

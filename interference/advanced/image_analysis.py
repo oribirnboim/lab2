@@ -7,7 +7,6 @@ import os
 
 
 
-
 d1 = array([66, 70, 78, 87, 95, 105, 120, 130, 142, 156, 180, 195, 125, 135, 165])
 c1 = array([(710, 655), (706, 642), (690, 596), (675, 550), (662, 505), (745, 527), (727, 552), (728, 490), (685, 557), (719, 635), (592, 600), (860, 560), (802, 600), (746, 622), (721, 545)])
 d2 = array([])
@@ -90,7 +89,7 @@ def analyse_1() -> array:
     # for i in range(len(images)):
     #     intensities.append(get_intensity(images[i], c1[i], radii=radii))
     # return array(intensities), radii[1:], d1
-    return np.load('intensities1_res100_max_800.npy'), radii[1:], d1
+    return np.load('intensities1_res100_max_800.npy'), radii[1:], d1-57
 
 
 def plot_1() -> None:
@@ -98,7 +97,13 @@ def plot_1() -> None:
     np.save('intensities1_res100_max_800.npy', intensities)
     for i in range(len(intensities)):
         intensity = intensities[i]
-        plt.scatter([d1[i] for _ in radii], radii, c=intensity, marker='s', s=20, cmap='gray')
+        plt.scatter([d1[i] for _ in radii], radii, c=intensity/np.max(intensity), marker='s', s=20, cmap='RdBu')
+        plt.plot([0, 69, 140], [155, 60, 210], linestyle='--', color='gray', linewidth=5)
+    plt.xlabel('d [cm]', fontsize=20)
+    plt.ylabel('r [pixels]', fontsize=20)
+    plt.ylim(0, 800)
+    plt.xlim(0, 150)
+    plt.colorbar()
     plt.show()
 
 
