@@ -95,17 +95,17 @@ def analyse_1() -> array:
 def plot_1() -> None:
     intensities, radii, d1 = analyse_1()
     np.save('intensities1_res100_max_800.npy', intensities)
+    radii = radii/1440*4.968
     for i in range(len(intensities)):
         intensity = intensities[i]
         plt.scatter([d1[i] for _ in radii], radii, c=intensity/np.max(intensity), marker='s', s=20, cmap='RdBu')
-        plt.plot([0, 69, 140], [155, 60, 210], linestyle='--', color='gray', linewidth=5)
-    plt.xlabel('d [cm]', fontsize=20)
-    plt.ylabel('r [pixels]', fontsize=20)
-    plt.ylim(0, 800)
-    plt.xlim(0, 150)
+    plt.plot([0, 69, 140], [0.55, 0.15, 0.8], linestyle='--', color='gray', linewidth=5)
     plt.colorbar()
+    plt.xlabel('d [cm]', fontsize=20)
+    plt.ylabel('r [mm]', fontsize=20)
+    plt.ylim(0, 2.74)
+    plt.xlim(0, 150)
     plt.show()
-
 
 
 if __name__ == "__main__":
